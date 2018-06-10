@@ -1,5 +1,15 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  h1 #{title} API
+  p Welcome to #{title} API
+  table
+    thead
+      tr
+        th Service Name
+        th Path
+    tbody
+      tr
+        td Users
+        td
+          a(href='./users') /users
