@@ -3,9 +3,13 @@ var root_dir = process.cwd();
 var db = require(path.join(root_dir, 'infrastructure/config/database'));
 
 const users = db.Schema({
-  username: String,
+  username: { type: String, unique: true },
   email: String,
-  password: String
-});
+  password: String,
+  created_at: { type: Date, default: Date.now },
+  updated_at: { type: Date, default: Date.now }
+}, { versionKey: false });
 
-module.exports = { users, db };
+Users = db.model('users', users);
+
+module.exports = { Users, db };
