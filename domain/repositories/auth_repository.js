@@ -16,7 +16,6 @@ var repo = module.exports = {
         if (err) {
           reject(err);
         } else {
-          //resolve(user);
           // check if the password is valid
           var passwordIsValid = repo.compare_password(req.body.password, user.password);
           if (!passwordIsValid) return res.status(401).send({ auth: false, token: null });
@@ -27,8 +26,6 @@ var repo = module.exports = {
             algorithm: 'HS256',
             expiresIn: 86400 // expires in 24 hours
           });
-
-          console.log(token);
 
           // return the information including token as JSON
           //res.status(200).send({ auth: true, token: token });

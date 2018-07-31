@@ -7,9 +7,7 @@ module.exports = {
 
   login: function(req, res) {
     auth_repository.login(req, res).then(function(data) {
-      res.json({
-        logindata: data
-      });
+      res.json(data);
     }, function(err){
       console.log("Error login");
     });
