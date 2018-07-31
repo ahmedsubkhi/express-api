@@ -56,16 +56,6 @@ module.exports = {
       res.json(err);
       console.log("Error delete data");
     });
-  },
-
-  login: function(req, res) {
-    users_repository.login(req, res).then(function(user) {
-      res.json({
-        logindata: user
-      });
-    }, function(err){
-      console.log("Error updating data");
-    });
-  },
+  }
 
 }

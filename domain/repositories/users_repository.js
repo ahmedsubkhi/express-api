@@ -11,10 +11,6 @@ var repo = module.exports = {
     return hash;
   },
 
-  compare_password: function (password, password_hashed) {
-    return bcrypt.compareSync(password, password_hashed);
-  },
-
   get_all: function(req, res) {
     return new Promise(function(resolve, reject) {
       Users.find(function (err, user) {
@@ -65,7 +61,7 @@ var repo = module.exports = {
 
         if(req.body.username) { user.set({ username : req.body.username }); }
         if(req.body.email) { user.set({ email : req.body.email }); }
-        if(req.body.password) { user.set({ password : generate_password(req.body.password) }); }
+        if(req.body.password) { user.set({ password : repo.generate_password(req.body.password) }); }
         user.set({ updated_at : new Date });
 
         user.save(function (err) {
@@ -88,31 +84,6 @@ var repo = module.exports = {
           reject(err);
         } else {
           resolve(user);
-        }
-      });
-    });
-  },
-
-  login: function(req, res, id) {
-    return new Promise(function(resolve, reject) {
-      Users.findOne({ username: req.body.username }, function(err, user){
-
-        var logindata = {};
-        if(user){
-          if(repo.compare_password(req.body.password, user.password)) {
-            logindata = {
-              username: { "req": req.body.username,
-                "res": user.username},
-              password: { "req": "XXXXXX",
-                "res": user.password }
-            }
-          }
-        }
-
-        if (err) {
-          reject(err);
-        } else {
-          resolve(logindata);
         }
       });
     });
