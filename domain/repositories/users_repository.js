@@ -1,7 +1,7 @@
 var path = require('path');
 var bcrypt = require('bcrypt');
 var root_dir = process.cwd();
-var { Users, db } = require(path.join(root_dir, 'domain/models/users'));
+var { Users } = require(path.join(root_dir, 'domain/models/users'));
 
 var repo = module.exports = {
 
@@ -9,10 +9,6 @@ var repo = module.exports = {
     var salt = bcrypt.genSaltSync(10);
     var hash = bcrypt.hashSync(password, salt);
     return hash;
-  },
-
-  compare_password: function (password, password_hashed) {
-    return bcrypt.compareSync(password, password_hashed);
   },
 
   get_all: function(req, res) {
@@ -65,7 +61,7 @@ var repo = module.exports = {
 
         if(req.body.username) { user.set({ username : req.body.username }); }
         if(req.body.email) { user.set({ email : req.body.email }); }
-        if(req.body.password) { user.set({ password : generate_password(req.body.password) }); }
+        if(req.body.password) { user.set({ password : repo.generate_password(req.body.password) }); }
         user.set({ updated_at : new Date });
 
         user.save(function (err) {
@@ -88,31 +84,6 @@ var repo = module.exports = {
           reject(err);
         } else {
           resolve(user);
-        }
-      });
-    });
-  },
-
-  login: function(req, res, id) {
-    return new Promise(function(resolve, reject) {
-      Users.findOne({ username: req.body.username }, function(err, user){
-
-        var logindata = {};
-        if(user){
-          if(repo.compare_password(req.body.password, user.password)) {
-            logindata = {
-              username: { "req": req.body.username,
-                "res": user.username},
-              password: { "req": "XXXXXX",
-                "res": user.password }
-            }
-          }
-        }
-
-        if (err) {
-          reject(err);
-        } else {
-          resolve(logindata);
         }
       });
     });

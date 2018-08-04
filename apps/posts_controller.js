@@ -1,12 +1,12 @@
 var path = require('path');
 var root_dir = process.cwd();
 
-var users_repository = require(path.join(root_dir, 'domain/repositories/users_repository'));
+var posts_repository = require(path.join(root_dir, 'domain/repositories/posts_repository'));
 
 module.exports = {
   get_all: function(req, res) {
-    users_repository.get_all(req, res).then(function(user) {
-      res.json(user);
+    posts_repository.get_all(req, res).then(function(data) {
+      res.json(data);
     }, function(err){
       res.json(err);
       console.log("Error retrieve data");
@@ -15,8 +15,8 @@ module.exports = {
 
   get_one: function(req, res) {
     var id = req.params.id;
-    users_repository.get_one(id).then(function(user) {
-      res.json(user);
+    posts_repository.get_one(id).then(function(data) {
+      res.json(data);
     }, function(err){
       res.json(err);
       console.log("Error retrieve data");
@@ -24,8 +24,8 @@ module.exports = {
   },
 
   create: function(req, res) {
-    users_repository.create(req, res).then(function(user) {
-      res.json(user);
+    posts_repository.create(req, res).then(function(data) {
+      res.json(data);
     }, function(err){
       res.json(err);
       console.log("Error saving data");
@@ -34,10 +34,10 @@ module.exports = {
 
   update: function(req, res) {
     var id = req.params.id;
-    users_repository.update(req, res, id).then(function(user) {
+    posts_repository.update(req, res, id).then(function(data) {
       res.json({
         updated_id: id,
-        newdata: user
+        newdata: data
       });
     }, function(err){
       res.json(err);
@@ -47,7 +47,7 @@ module.exports = {
 
   delete: function(req, res) {
     var id = req.params.id;
-    users_repository.delete(id).then(function(stat) {
+    posts_repository.delete(id).then(function(stat) {
       res.json({
         deleted_id: id,
         status: stat
