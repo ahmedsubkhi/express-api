@@ -4,7 +4,7 @@ var db = require(path.join(root_dir, 'infrastructure/config/database'));
 
 const users = db.Schema({
   username: { type: String, unique: true },
-  email: String,
+  email: { type: String, unique: true },
   password: String,
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now }
@@ -12,4 +12,4 @@ const users = db.Schema({
 
 Users = db.model('users', users);
 
-module.exports = { Users, db };
+module.exports = { Users };
