@@ -7,15 +7,6 @@
 * MongoDB >= 3.6
 
 
-## Database setup
-```
-mongo
-> use express_app
-> db.users.insertOne({ username: "ahmedsubkhi", email: "ahmed.subkhi@gmail.com", password: "$2a$10$3ZszmlVJ9BpeLI.0n9wFzOPh/7AmCajVcBvJm4BUGfThKU8K2s3di", created_at: new Date, updated_at: new Date })
-```
-e.g: password = ahmed
-
-
 ## How to install
 ```
 git clone https://github.com/ahmedsubkhi/express-api.git
@@ -23,6 +14,15 @@ cd express-api/
 npm install
 npm start
 ```
+
+## Database setup
+```
+mongoimport --db express_api --collection auto_increments --file infrastructure/database/auto_increments.json
+mongoimport --db express_api --collection posts --file infrastructure/database/posts.json
+mongoimport --db express_api --collection users --file infrastructure/database/users.json
+```
+e.g: 
+Use: email = ahmed.subkhi@gmail.com, and password = `ahmed`.
 
 
 ## How to use the services
