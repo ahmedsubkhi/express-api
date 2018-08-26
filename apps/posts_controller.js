@@ -11,8 +11,6 @@ module.exports = {
       res.json(err);
       console.log("Error retrieve data");
     });
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   },
 
   get_one: function(req, res) {

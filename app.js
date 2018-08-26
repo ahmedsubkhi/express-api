@@ -9,6 +9,7 @@ var multer = require('multer')().single();
 var mainRouter = require('./infrastructure/config/routes');
 
 var app = express();
+var cors = require('cors'); // Cross-Origin Resource Sharing
 
 // view engine setup
 app.set('views', path.join(__dirname, 'interface/views'));
@@ -23,6 +24,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(multer);
 
+app.use(cors());
 app.use('/', mainRouter);
 
 // catch 404 and forward to error handler
