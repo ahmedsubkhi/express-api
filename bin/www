@@ -23,20 +23,31 @@ require('dotenv').load();
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
-/*
- * HTTPS Options
- */
-
-var https_options = {
-  key: fs.readFileSync(process.env.HTTPS_CERT_KEY_FILE),
-  cert: fs.readFileSync(process.env.HTTPS_CERT_FILE)
-};
-
 /**
- * Create HTTPS server.
+ * Create server.
  */
+if(process.env.HTTPS == 'on'){
 
-var server = https.createServer(https_options, app);
+  /*
+   * HTTPS Options
+   */
+
+  var https_options = {
+    key: fs.readFileSync(process.env.HTTPS_CERT_KEY_FILE),
+    cert: fs.readFileSync(process.env.HTTPS_CERT_FILE)
+  };
+
+  var server = https.createServer(https_options, app);
+
+} else {
+
+  /*
+   * HTTP Options
+   */
+
+  var server = http.createServer(app);
+
+}
 
 /**
  * Listen on provided port, on all network interfaces.
