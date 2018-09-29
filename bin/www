@@ -7,6 +7,14 @@
 var app = require('../app');
 var debug = require('debug')('express-app:server');
 var http = require('http');
+var https = require('https');
+var fs = require('fs');
+
+/*
+ * Load .env variable from /.env file
+ */
+
+require('dotenv').load();
 
 /**
  * Get port from environment and store in Express.
@@ -15,11 +23,20 @@ var http = require('http');
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
-/**
- * Create HTTP server.
+/*
+ * HTTPS Options
  */
 
-var server = http.createServer(app);
+var https_options = {
+  key: fs.readFileSync(process.env.HTTPS_CERT_KEY_FILE),
+  cert: fs.readFileSync(process.env.HTTPS_CERT_FILE)
+};
+
+/**
+ * Create HTTPS server.
+ */
+
+var server = https.createServer(https_options, app);
 
 /**
  * Listen on provided port, on all network interfaces.
