@@ -13,6 +13,26 @@ module.exports = {
     });
   },
 
+  get_by_month: function(req, res) {
+    var yr = req.params.yr;
+    var mon = req.params.mon;
+    posts_repository.get_by_month(yr, mon).then(function(data) {
+      res.json(data);
+    }, function(err){
+      res.json(err);
+      console.log("Error retrieve data year");
+    });
+  },
+
+  get_all_year: function(req, res) {
+    posts_repository.get_all_year().then(function(data) {
+      res.json(data);
+    }, function(err){
+      res.json(err);
+      console.log("Error retrieve data year");
+    });
+  },
+
   get_one: function(req, res) {
     var id = req.params.id;
     posts_repository.get_one(id).then(function(data) {

@@ -32,6 +32,58 @@ var repo = module.exports = {
     });
   },
 
+  get_all_year: function(){
+    return new Promise(function(resolve, reject){
+      Posts.aggregate(
+        [{
+          $group: {
+            _id: {
+              year: { $year: "$created_at" },
+              month: { $month : "$created_at" }
+            }          ,
+            count: { $sum: 1 }
+          }
+        }]
+      ).exec(function(err, data){
+        if(err){
+          console.log(err);
+          reject(err);
+        } else {
+          resolve(data);
+        }
+      });
+    });
+  },
+
+  get_by_month: function(yr, mon){
+    return new Promise(function(resolve, reject){
+      Posts.aggregate(
+        [
+        {
+          $project: {
+            id_post: 1,
+            title: 1,
+            month: { $month: "$created_at" },
+            year: { $year: "$created_at" }
+          }
+        },
+        {
+          $match: {
+            month: parseInt(mon),
+            year: parseInt(yr)
+          }
+        }]
+      ).exec(function(err, data){
+        if(err){
+          console.log(err);
+          reject(err);
+        } else {
+          resolve(data);
+        }
+      });
+    });
+  },
+
   get_one: function(id) {
     return new Promise(function(resolve, reject) {
       Posts.findOne({ "id_post":id }, function (err, data) {
