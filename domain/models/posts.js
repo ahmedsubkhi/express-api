@@ -11,7 +11,9 @@ var posts = db.Schema({
   body: String,
   id_user: String,
   created_at: { type: Date, default: Date.now },
-  updated_at: { type: Date, default: Date.now }
+  updated_at: { type: Date, default: Date.now },
+  published: Boolean,
+  deleted: Boolean
 }, { versionKey: false });
 
 
@@ -21,7 +23,6 @@ posts.pre('save', function(next) {
     if (err) {
       next(err);
     } else {
-      console.log(data);
       self.id_post = data.seq;
       next();
     }

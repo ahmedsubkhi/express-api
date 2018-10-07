@@ -43,6 +43,15 @@ module.exports = {
     });
   },
 
+  getLatest: function(req, res) {
+    posts_repository.getLatest().then(function(data) {
+      res.json(data);
+    }, function(err){
+      res.json(err);
+      console.log("Error retrieve data");
+    });
+  },
+
   create: function(req, res) {
     posts_repository.create(req, res).then(function(data) {
       res.json(data);

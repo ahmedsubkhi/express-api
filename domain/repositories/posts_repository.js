@@ -40,7 +40,7 @@ var repo = module.exports = {
             _id: {
               year: { $year: "$created_at" },
               month: { $month : "$created_at" }
-            }          ,
+            },
             count: { $sum: 1 }
           }
         }]
@@ -90,13 +90,43 @@ var repo = module.exports = {
         if (err) {
           reject(err);
         } else {
-          Users.findById(data.id_user, function (err, d_user) {
-            var data_post = data.toObject(); // Convert 'data' from string to Object
-            data_post.user = d_user;
+          if(data){
+            Users.findById(data.id_user, function (err, d_user) {
+              var data_post = data.toObject(); // Convert 'data' from string to Object
+              data_post.user = d_user;
+              if (err) {
+                reject(err);
+              } else {
+                resolve(data_post);
+              }
+            });
+          } else {
+            resolve(null);
+          }
+        }
+      });
+    });
+  },
+
+  getLatest: function(latest = 10) {
+    return new Promise(function(resolve, reject) {
+      Posts.find().sort({'created_at': -1}).limit(latest).exec(function(err, data) {
+        var posts = data;
+        var data_post = [];
+
+        if (err) {
+          reject(err);
+        } else {
+          Users.find(function (err, d_user) {
+            posts.map(function(p, i){ // Looping posts data
+              p = p.toObject(); // Convert p from string to Object
+              var usr_index = d_user.findIndex(u => u._id == p.id_user); // Find index of 'users' Collections  depending by id_user that wrote to 'posts' Collections
+              p.user = d_user[usr_index]; // push data user gotten to 'p' variable
+              data_post[i] = p; // push all variable 'p' saved to 'data_post'
+            });
             if (err) {
               reject(err);
             } else {
-              console.log(data_post);
               resolve(data_post);
             }
           });
@@ -111,7 +141,9 @@ var repo = module.exports = {
       body: req.body.body,
       id_user: res.locals.id_user,
       created_at: new Date,
-      updated_at: new Date
+      updated_at: new Date,
+      published: true,
+      deleted: false
     });
 
     return new Promise(function(resolve, reject) {
