@@ -1,1 +1,1 @@
-{"_id":{"$oid":"5b6584f480411a1c654e0cea"},"title":"Hello World","body":"Hello, welcome to this blog !","id_user":"5b5dd2f05695c410cdf38848","created_at":{"$date":"2018-08-04T10:50:28.753Z"},"updated_at":{"$date":"2018-08-04T10:50:28.753Z"},"id_post":1}
+{"_id":{"$oid":"5b6584f480411a1c654e0cea"},"title":"Hello World","body":"Hello, welcome to this blog !","id_user":"5b5dd2f05695c410cdf38848","created_at":{"$date":"2018-08-04T10:50:28.753Z"},"updated_at":{"$date":"2018-08-04T10:50:28.753Z"},"id_post":1,"published":true,"deleted":false}
