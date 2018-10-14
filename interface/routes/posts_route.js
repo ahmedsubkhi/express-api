@@ -10,6 +10,7 @@ var controller = require(path.join(root_dir, 'apps/posts_controller'));
 var verify_token = require(path.join(root_dir, 'interface/middlewares/verify_token'));
 
 router.get('/', controller.get_all);
+router.get('/admin/posts', verify_token, controller.get_all);
 router.get('/latest', controller.getLatest);
 router.get('/bymonth/:yr/:mon', controller.get_by_month);
 router.get('/year', controller.get_all_year);

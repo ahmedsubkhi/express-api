@@ -14,7 +14,7 @@ var repo = module.exports = {
         if (err) {
           reject(err);
         } else {
-          Users.find(function (err, d_user) {
+          Users.find({}, '_id username', function (err, d_user) {
             posts.map(function(p, i){ // Looping posts data
               p = p.toObject(); // Convert p from string to Object
               var usr_index = d_user.findIndex(u => u._id == p.id_user); // Find index of 'users' Collections  depending by id_user that wrote to 'posts' Collections
@@ -28,7 +28,7 @@ var repo = module.exports = {
             }
           });
         }
-      });
+      }).sort({'created_at': -1});
     });
   },
 
@@ -59,20 +59,18 @@ var repo = module.exports = {
     return new Promise(function(resolve, reject){
       Posts.aggregate(
         [
-        {
-          $project: {
+        { $project: {
             id_post: 1,
             title: 1,
             month: { $month: "$created_at" },
             year: { $year: "$created_at" }
-          }
-        },
-        {
-          $match: {
+          } },
+        { $match: {
             month: parseInt(mon),
             year: parseInt(yr)
-          }
-        }]
+          } },
+        { $sort: {"id_post": -1} }
+        ]
       ).exec(function(err, data){
         if(err){
           console.log(err);
@@ -91,7 +89,7 @@ var repo = module.exports = {
           reject(err);
         } else {
           if(data){
-            Users.findById(data.id_user, function (err, d_user) {
+            Users.findById(data.id_user, '_id username', function (err, d_user) {
               var data_post = data.toObject(); // Convert 'data' from string to Object
               data_post.user = d_user;
               if (err) {
@@ -108,7 +106,7 @@ var repo = module.exports = {
     });
   },
 
-  getLatest: function(latest = 10) {
+  getLatest: function(latest = 5) {
     return new Promise(function(resolve, reject) {
       Posts.find().sort({'created_at': -1}).limit(latest).exec(function(err, data) {
         var posts = data;
@@ -117,7 +115,7 @@ var repo = module.exports = {
         if (err) {
           reject(err);
         } else {
-          Users.find(function (err, d_user) {
+          Users.find({}, '_id username', function (err, d_user) {
             posts.map(function(p, i){ // Looping posts data
               p = p.toObject(); // Convert p from string to Object
               var usr_index = d_user.findIndex(u => u._id == p.id_user); // Find index of 'users' Collections  depending by id_user that wrote to 'posts' Collections
@@ -139,7 +137,7 @@ var repo = module.exports = {
     var data = new Posts({
       title: req.body.title,
       body: req.body.body,
-      id_user: res.locals.id_user,
+      id_user: res.locals.id_user, // get from middleware 'verify_token'
       created_at: new Date,
       updated_at: new Date,
       published: true,
@@ -159,24 +157,20 @@ var repo = module.exports = {
 
   update: function(req, res, id) {
     return new Promise(function(resolve, reject) {
-      Posts.findById(id, function(err, data){
-
-        var datas = {
-          title: req.body.title,
-          body: req.body.body,
-          id_user: res.locals.id_user,
-          updated_at: new Date
-        };
-        data.set(datas);
-
-        data.update(function (err) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(data);
-          }
-        });
-
+      var datas = {
+        title: req.body.title,
+        body: req.body.body,
+        id_user: res.locals.id_user, // get from middleware 'verify_token'
+        updated_at: new Date,
+        published: true,
+        deleted: false
+      };
+      Posts.findByIdAndUpdate(id, datas, {}, function(err, data){
+        if (err) {
+          reject(err);
+        } else {
+          resolve(datas);
+        }
       });
     });
   },
