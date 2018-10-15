@@ -15,6 +15,14 @@ npm install
 npm start
 ```
 
+
+## HTTP Setup
+```
+cp .env.example .env
+```
+Edit `.env` file and change HTTPS to "on" if you want to turn it ON and "off" to turn it OFF. You should set correct HTTPS_CERT_KEY_FILE and HTTPS_CERT_FILE if you want to HTTPS ON.
+
+
 ## Database setup
 ```
 mongoimport --db express_api --collection auto_increments --file infrastructure/database/auto_increments.json
@@ -23,6 +31,13 @@ mongoimport --db express_api --collection users --file infrastructure/database/u
 ```
 e.g: 
 Use: email = ahmed.subkhi@gmail.com, and password = `ahmed`.
+
+
+## JWT Setup
+```
+cp infrastructure/config/keys.example.js infrastructure/config/keys.js
+```
+Edit `keys.js` and change `jwt_verify_key` constant what ever you want.
 
 
 ## How to use the services
@@ -48,5 +63,5 @@ curl -X GET \
 ```
 curl -X GET \
   http://localhost:3000/posts/ \
-  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -H 'Content-Type: application/x-www-form-urlencoded'
 ```
