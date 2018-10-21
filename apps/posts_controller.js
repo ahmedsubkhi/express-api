@@ -43,8 +43,8 @@ module.exports = {
     });
   },
 
-  getLatest: function(req, res) {
-    posts_repository.getLatest().then(function(data) {
+  get_latest: function(req, res) {
+    posts_repository.get_latest().then(function(data) {
       res.json(data);
     }, function(err){
       res.json(err);

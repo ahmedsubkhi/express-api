@@ -2,37 +2,53 @@ var path = require('path');
 var root_dir = process.cwd();
 var Posts = require(path.join(root_dir, 'domain/models/posts'));
 var { Users } = require(path.join(root_dir, 'domain/models/users'));
+const redis = require('redis');
+const client_redis = redis.createClient();
 
 var repo = module.exports = {
 
   get_all: function(req, res) {
     return new Promise(function(resolve, reject) {
-      Posts.find(function (err, data) {
-        var posts = data;
-        var data_post = [];
-
-        if (err) {
-          reject(err);
+      client_redis.get('posts', (err, res_redis) => {
+        if (res_redis){
+          // if there is 'posts' key data in Redis, then show it to client as parsed JSON
+          resolve(JSON.parse(res_redis));
         } else {
-          Users.find({}, '_id username', function (err, d_user) {
-            posts.map(function(p, i){ // Looping posts data
-              p = p.toObject(); // Convert p from string to Object
-              var usr_index = d_user.findIndex(u => u._id == p.id_user); // Find index of 'users' Collections  depending by id_user that wrote to 'posts' Collections
-              p.user = d_user[usr_index]; // push data user gotten to 'p' variable
-              data_post[i] = p; // push all variable 'p' saved to 'data_post'
-            });
+          // if no cached 'posts' data in Redis, get it from MongoDB then save to Redis
+          Posts.find(function (err, data) {
+            var posts = data;
+            var data_post = [];
+
             if (err) {
               reject(err);
             } else {
-              resolve(data_post);
+              // Get the author of post to append in posts data
+              Users.find({}, '_id username', function (err, d_user) {
+                posts.map(function(p, i){ // Looping posts data
+                  p = p.toObject(); // Convert p from string to Object
+                  var usr_index = d_user.findIndex(u => u._id == p.id_user); // Find index of 'users' Collections  depending by id_user that wrote to 'posts' Collections
+                  p.user = d_user[usr_index]; // push data user gotten to 'p' variable
+                  data_post[i] = p; // push all variable 'p' saved to 'data_post'
+                });
+                if (err) {
+                  reject(err);
+                } else {
+                  // Save 'posts' data to Redis key. Convert to JSON string first
+                  client_redis.setex('posts', 3600, JSON.stringify(data_post));
+                  // Show to client
+                  resolve(data_post);
+                }
+              });
+
             }
-          });
+          }).sort({'created_at': -1});
         }
-      }).sort({'created_at': -1});
+      });
     });
   },
 
   get_all_year: function(){
+    // Get the month and year of grouped posts
     return new Promise(function(resolve, reject){
       Posts.aggregate(
         [{
@@ -56,6 +72,7 @@ var repo = module.exports = {
   },
 
   get_by_month: function(yr, mon){
+    // Get item of posts by filter month and year
     return new Promise(function(resolve, reject){
       Posts.aggregate(
         [
@@ -106,7 +123,7 @@ var repo = module.exports = {
     });
   },
 
-  getLatest: function(latest = 5) {
+  get_latest: function(latest = 5) {
     return new Promise(function(resolve, reject) {
       Posts.find().sort({'created_at': -1}).limit(latest).exec(function(err, data) {
         var posts = data;

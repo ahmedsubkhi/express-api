@@ -11,7 +11,7 @@ var verify_token = require(path.join(root_dir, 'interface/middlewares/verify_tok
 
 router.get('/', controller.get_all);
 router.get('/admin/posts', verify_token, controller.get_all);
-router.get('/latest', controller.getLatest);
+router.get('/latest', controller.get_latest);
 router.get('/bymonth/:yr/:mon', controller.get_by_month);
 router.get('/year', controller.get_all_year);
 router.get('/:id', controller.get_one);
