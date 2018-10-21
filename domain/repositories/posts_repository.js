@@ -9,8 +9,13 @@ var repo = module.exports = {
 
   get_all: function(req, res) {
     return new Promise(function(resolve, reject) {
-      client_redis.get('posts', (err, res_redis) => {
-        if (res_redis){
+      var updated = 0;
+      client_redis.get('updated:redis', (err, res_updated) => {
+        updated = (res_updated == null) ? 0 : res_updated;
+      });
+
+      client_redis.get('posts:redis', (err, res_redis) => {
+        if (res_redis && !updated){
           // if there is 'posts' key data in Redis, then show it to client as parsed JSON
           resolve(JSON.parse(res_redis));
         } else {
@@ -34,7 +39,8 @@ var repo = module.exports = {
                   reject(err);
                 } else {
                   // Save 'posts' data to Redis key. Convert to JSON string first
-                  client_redis.setex('posts', 3600, JSON.stringify(data_post));
+                  client_redis.setex('posts:redis', 3600, JSON.stringify(data_post));
+                  client_redis.set('updated:redis', 0);
                   // Show to client
                   resolve(data_post);
                 }
@@ -166,6 +172,7 @@ var repo = module.exports = {
         if (err) {
           reject(err);
         } else {
+          client_redis.set('updated:redis', 1);
           resolve(data);
         }
       });
@@ -186,6 +193,7 @@ var repo = module.exports = {
         if (err) {
           reject(err);
         } else {
+          client_redis.set('updated:redis', 1);
           resolve(datas);
         }
       });
@@ -199,6 +207,7 @@ var repo = module.exports = {
         if (err) {
           reject(err);
         } else {
+          client_redis.set('updated:redis', 1);
           resolve(data);
         }
       });
