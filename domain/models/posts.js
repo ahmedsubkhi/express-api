@@ -9,7 +9,7 @@ var posts = db.Schema({
   id_post: Number,
   title: String,
   body: String,
-  id_user: String,
+  id_user: db.Schema.Types.ObjectId,
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
   published: Boolean,
