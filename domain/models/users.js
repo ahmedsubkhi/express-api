@@ -12,4 +12,4 @@ const users = db.Schema({
 
 Users = db.model('users', users);
 
-module.exports = { Users };
+module.exports = Users;

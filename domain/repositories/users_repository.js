@@ -1,7 +1,7 @@
 var path = require('path');
 var bcrypt = require('bcrypt');
 var root_dir = process.cwd();
-var { Users } = require(path.join(root_dir, 'domain/models/users'));
+var Users = require(path.join(root_dir, 'domain/models/users'));
 
 var repo = module.exports = {
 

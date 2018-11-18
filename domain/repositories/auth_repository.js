@@ -4,7 +4,7 @@ var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 
 var root_dir = process.cwd();
 
-var { Users, db } = require(path.join(root_dir, 'domain/models/users'));
+var Users = require(path.join(root_dir, 'domain/models/users'));
 var keys = require(path.join(root_dir, 'infrastructure/config/keys'));
 
 var repo = module.exports = {
