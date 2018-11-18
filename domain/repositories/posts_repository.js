@@ -9,6 +9,7 @@ var repo = module.exports = {
 
   get_all: function(req, res) {
     return new Promise(function(resolve, reject) {
+      /*
       var updated = 0;
       client_redis.get('updated:redis', (err, res_updated) => {
         updated = (res_updated == null) ? 0 : res_updated;
@@ -19,6 +20,7 @@ var repo = module.exports = {
           // if there is 'posts' key data in Redis, then show it to client as parsed JSON
           resolve(JSON.parse(res_redis));
         } else {
+      */
           // if no cached 'posts' data in Redis, get it from MongoDB then save to Redis
           Posts.find(function (err, data) {
             var posts = data;
@@ -31,7 +33,7 @@ var repo = module.exports = {
               Users.find({}, '_id username', function (err, d_user) {
                 posts.map(function(p, i){ // Looping posts data
                   p = p.toObject(); // Convert p from string to Object
-                  var usr_index = d_user.findIndex(u => u._id == p.id_user); // Find index of 'users' Collections  depending by id_user that wrote to 'posts' Collections
+                  var usr_index = d_user.findIndex(u => String(u._id) == String(p.id_user)); // Find index of 'users' Collections  depending by id_user that wrote to 'posts' Collections
                   p.user = d_user[usr_index]; // push data user gotten to 'p' variable
                   data_post[i] = p; // push all variable 'p' saved to 'data_post'
                 });
@@ -48,8 +50,10 @@ var repo = module.exports = {
 
             }
           }).sort({'created_at': -1});
+      /*
         }
       });
+      */
     });
   },
 
@@ -141,7 +145,7 @@ var repo = module.exports = {
           Users.find({}, '_id username', function (err, d_user) {
             posts.map(function(p, i){ // Looping posts data
               p = p.toObject(); // Convert p from string to Object
-              var usr_index = d_user.findIndex(u => u._id == p.id_user); // Find index of 'users' Collections  depending by id_user that wrote to 'posts' Collections
+              var usr_index = d_user.findIndex(u => String(u._id) == String(p.id_user)); // Find index of 'users' Collections  depending by id_user that wrote to 'posts' Collections
               p.user = d_user[usr_index]; // push data user gotten to 'p' variable
               data_post[i] = p; // push all variable 'p' saved to 'data_post'
             });
