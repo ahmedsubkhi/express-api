@@ -1,9 +1,7 @@
 var path = require('path');
 var root_dir = process.cwd();
 var Posts = require(path.join(root_dir, 'domain/models/posts'));
-var { Users } = require(path.join(root_dir, 'domain/models/users'));
-const redis = require('redis');
-const client_redis = redis.createClient();
+var Users = require(path.join(root_dir, 'domain/models/users'));
 
 var repo = module.exports = {
 
@@ -156,7 +154,6 @@ var repo = module.exports = {
         if (err) {
           reject(err);
         } else {
-          client_redis.set('updated:redis', 1);
           resolve(data);
         }
       });
@@ -177,7 +174,6 @@ var repo = module.exports = {
         if (err) {
           reject(err);
         } else {
-          client_redis.set('updated:redis', 1);
           resolve(datas);
         }
       });
@@ -191,7 +187,6 @@ var repo = module.exports = {
         if (err) {
           reject(err);
         } else {
-          client_redis.set('updated:redis', 1);
           resolve(data);
         }
       });
