@@ -191,6 +191,29 @@ var repo = module.exports = {
         }
       });
     });
+  },
+
+  create_comment: function(req, res) {
+    var comment = {
+      id_user: res.locals.id_user, // get from middleware 'verify_token'
+      body: req.body.body,
+      created_at: new Date,
+      updated_at: new Date,
+      published: true,
+      deleted: false
+    };
+
+    return new Promise(function(resolve, reject) {
+      Posts.findByIdAndUpdate(req.body.id_post,
+        { $push:{ comments: comment } },
+        { safe: true, upsert: true, new : true }, function(err, data){
+          if (err) {
+            reject(err);
+          } else {
+            resolve(data);
+          }
+      });
+    });
   }
 
 }

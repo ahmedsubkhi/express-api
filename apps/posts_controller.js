@@ -85,6 +85,18 @@ module.exports = {
       res.json(err);
       console.log("Error delete data");
     });
+  },
+
+  create_comment: function(req, res) {
+    posts_repository.create_comment(req, res).then(function(data) {
+      res.json({
+        updated_id: req.body.id_post,
+        newdata: data
+      });
+    }, function(err){
+      res.json(err);
+      console.log("Error updating data");
+    });
   }
 
 }

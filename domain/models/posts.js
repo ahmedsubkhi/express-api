@@ -12,7 +12,7 @@ var comment = db.Schema({
   updated_at: { type: Date, default: Date.now },
   published: Boolean,
   deleted: Boolean
-})
+});
 
 var posts = db.Schema({
   id_post: Number,

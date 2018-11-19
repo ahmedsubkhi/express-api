@@ -19,6 +19,7 @@ router.post('/', verify_token, controller.create);
 router.post('/:id', verify_token, controller.update);
 router.delete('/:id', verify_token, controller.delete);
 
+router.post('/:id/addcomment', verify_token, controller.create_comment);
 
 
 module.exports = router;
