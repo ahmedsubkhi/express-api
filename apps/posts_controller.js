@@ -43,6 +43,16 @@ module.exports = {
     });
   },
 
+  get_one_foradmin: function(req, res) {
+    var id = req.params.id;
+    posts_repository.get_one_foradmin(id).then(function(data) {
+      res.json(data);
+    }, function(err){
+      res.json(err);
+      console.log("Error retrieve data");
+    });
+  },
+
   get_latest: function(req, res) {
     posts_repository.get_latest().then(function(data) {
       res.json(data);
@@ -74,9 +84,9 @@ module.exports = {
     });
   },
 
-  delete: function(req, res) {
+  destroy: function(req, res) {
     var id = req.params.id;
-    posts_repository.delete(id).then(function(stat) {
+    posts_repository.destroy(id).then(function(stat) {
       res.json({
         deleted_id: id,
         status: stat
@@ -90,7 +100,7 @@ module.exports = {
   create_comment: function(req, res) {
     posts_repository.create_comment(req, res).then(function(data) {
       res.json({
-        updated_id: req.body.id_post,
+        updated_id: req.body._id,
         newdata: data
       });
     }, function(err){

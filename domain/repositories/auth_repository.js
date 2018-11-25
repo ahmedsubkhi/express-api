@@ -15,7 +15,7 @@ var repo = module.exports = {
 
   login: function(req, res) {
     return new Promise(function(resolve, reject) {
-      Users.findOne({ email: req.body.email }, function (err, user) {
+      Users.findOne({ email: req.body.email }).populate({ path: 'id_group', select: 'name' }).exec(function (err, user) {
         if (err) {
           reject(err);
         } else {
@@ -26,7 +26,7 @@ var repo = module.exports = {
 
             // if user is found and password is valid
             // create a token
-            var token = jwt.sign({ id_user: user._id, username: user.username }, keys.jwt_verify_key, {
+            var token = jwt.sign({ id_user: user._id, username: user.username, groupname: user.group.name }, keys.jwt_verify_key, {
               algorithm: 'HS256',
               expiresIn: 86400 // expires in 24 hours
             });
