@@ -5,11 +5,13 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var multer = require('multer')().single();
+var passport = require('passport');
 
-var mainRouter = require('./infrastructure/config/routes');
 
 var app = express();
 var cors = require('cors'); // Cross-Origin Resource Sharing
+var mainRouter = require('./infrastructure/config/routes');
+require('./infrastructure/config/passport');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'interface/views'));

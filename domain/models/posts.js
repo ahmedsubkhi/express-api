@@ -19,7 +19,7 @@ var schemaOptions = {
 
 var comment = db.Schema({
   id_user: { type: db.Schema.Types.ObjectId, ref: 'users' },
-  body: String,
+  body: { type: String, required: true },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
   published: Boolean,
@@ -33,8 +33,8 @@ comment.virtual('user').get(function () { // created new alias 'user' fields in 
 
 var posts = db.Schema({
   id_post: Number,
-  title: String,
-  body: String,
+  title: { type: String, required: true },
+  body: { type: String, required: true },
   id_user: { type: db.Schema.Types.ObjectId, required: true, ref: 'users' },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },

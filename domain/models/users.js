@@ -18,7 +18,9 @@ const users = db.Schema({
   username: { type: String, unique: true, required: true },
   email: { type: String, unique: true, required: true },
   password: String,
+  name: { type: String, required: true },
   id_group: { type: db.Schema.Types.ObjectId, ref: 'groups' },
+  active: Boolean,
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now }
 }, schemaOptions);
