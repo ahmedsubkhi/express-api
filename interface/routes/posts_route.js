@@ -9,6 +9,7 @@ var controller = require(path.join(root_dir, 'apps/posts_controller'));
 // declare middleware
 var verify_token = require(path.join(root_dir, 'interface/middlewares/verify_token'));
 var verify_superuser = require(path.join(root_dir, 'interface/middlewares/verify_superuser'));
+var verify_recaptcha = require(path.join(root_dir, 'interface/middlewares/verify_recaptcha'));
 
 router.get('/', controller.get_all);
 router.get('/admin/posts', verify_token, verify_superuser, controller.get_all);
@@ -21,7 +22,7 @@ router.post('/', verify_token, verify_superuser, controller.create);
 router.post('/:id', verify_token, verify_superuser, controller.update);
 router.delete('/:id', verify_token, verify_superuser, controller.destroy);
 
-router.post('/:id/addcomment', verify_token, controller.create_comment);
+router.post('/:id/addcomment', verify_token, verify_recaptcha, controller.create_comment);
 
 
 module.exports = router;
