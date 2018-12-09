@@ -17,7 +17,7 @@ function verify_token(req, res, next) {
     return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
 
     // if everything good, save to request for use in other routes
-    res.locals.id_user = decoded.id_user;
+    res.locals = decoded;
     next();
   });
 }

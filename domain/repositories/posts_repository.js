@@ -1,37 +1,24 @@
 var path = require('path');
+var _ = require('lodash');
 var root_dir = process.cwd();
 var Posts = require(path.join(root_dir, 'domain/models/posts'));
-var Users = require(path.join(root_dir, 'domain/models/users'));
 
 var repo = module.exports = {
 
   get_all: function(req, res) {
     return new Promise(function(resolve, reject) {
-      Posts.find(function (err, data) {
+      Posts.find({}, 'title body user created_at updated_at id_post')
+      .populate({ path: 'id_user', select: 'username' })
+      .sort({ 'created_at' : -1 })
+      .exec(function (err, data) {
         var posts = data;
-        var data_post = [];
 
         if (err) {
           reject(err);
         } else {
-          // Get the author of post to append in posts data
-          Users.find({}, '_id username', function (err, d_user) {
-            posts.map(function(p, i){ // Looping posts data
-              p = p.toObject(); // Convert p from string to Object
-              var usr_index = d_user.findIndex(u => String(u._id) == String(p.id_user)); // Find index of 'users' Collections  depending by id_user that wrote to 'posts' Collections
-              p.user = d_user[usr_index]; // push data user gotten to 'p' variable
-              data_post[i] = p; // push all variable 'p' saved to 'data_post'
-            });
-            if (err) {
-              reject(err);
-            } else {
-              // Show to client
-              resolve(data_post);
-            }
-          });
-
+          resolve(posts);
         }
-      }).sort({'created_at': -1});
+      });
     });
   },
 
@@ -89,20 +76,44 @@ var repo = module.exports = {
 
   get_one: function(id) {
     return new Promise(function(resolve, reject) {
-      Posts.findOne({ "id_post":id }, function (err, data) {
+      Posts.findOne({ "id_post":id })
+      .populate([
+        { path: 'id_user', select: 'username' },
+        { path: 'comments.id_user', select: 'username' }
+      ])
+      .sort({ 'created_at' : -1 })
+      .exec(function (err, data) {
+        data.comments = _.reject(data.comments, { 'id_user': null });
+
+        var posts = data;
+
         if (err) {
           reject(err);
         } else {
           if(data){
-            Users.findById(data.id_user, '_id username', function (err, d_user) {
-              var data_post = data.toObject(); // Convert 'data' from string to Object
-              data_post.user = d_user;
-              if (err) {
-                reject(err);
-              } else {
-                resolve(data_post);
-              }
-            });
+            resolve(posts);
+          } else {
+            resolve(null);
+          }
+        }
+      });
+    });
+  },
+
+  get_one_foradmin: function(id) {
+    return new Promise(function(resolve, reject) {
+      Posts.findOne({ "id_post":id }, 'title body user created_at updated_at id_post')
+      .populate({ path: 'id_user', select: 'username' })
+      .sort({ 'created_at' : -1 })
+      .exec(function (err, data) {
+
+        var posts = data;
+
+        if (err) {
+          reject(err);
+        } else {
+          if(data){
+            resolve(posts);
           } else {
             resolve(null);
           }
@@ -113,26 +124,22 @@ var repo = module.exports = {
 
   get_latest: function(latest = 5) {
     return new Promise(function(resolve, reject) {
-      Posts.find().sort({'created_at': -1}).limit(latest).exec(function(err, data) {
+      Posts.find({}, 'title body user created_at updated_at id_post')
+      .populate({ path: 'id_user', select: 'username' })
+      .sort({ 'created_at' : -1 })
+      .limit(latest)
+      .exec(function (err, data) {
+
         var posts = data;
-        var data_post = [];
 
         if (err) {
           reject(err);
         } else {
-          Users.find({}, '_id username', function (err, d_user) {
-            posts.map(function(p, i){ // Looping posts data
-              p = p.toObject(); // Convert p from string to Object
-              var usr_index = d_user.findIndex(u => String(u._id) == String(p.id_user)); // Find index of 'users' Collections  depending by id_user that wrote to 'posts' Collections
-              p.user = d_user[usr_index]; // push data user gotten to 'p' variable
-              data_post[i] = p; // push all variable 'p' saved to 'data_post'
-            });
-            if (err) {
-              reject(err);
-            } else {
-              resolve(data_post);
-            }
-          });
+          if (data) {
+            resolve(posts);
+          } else {
+            resolve(null);
+          }
         }
       });
     });
@@ -180,7 +187,7 @@ var repo = module.exports = {
     });
   },
 
-  delete: function(id) {
+  destroy: function(id) {
     var data = Posts.findById(id);
     return new Promise(function(resolve, reject) {
       data.remove(function (err) {
@@ -189,6 +196,49 @@ var repo = module.exports = {
         } else {
           resolve(data);
         }
+      });
+    });
+  },
+
+  create_comment: function(req, res) {
+    var comment = {
+      id_user: res.locals.id_user, // get from middleware 'verify_token'
+      body: req.body.body,
+      created_at: new Date,
+      updated_at: new Date,
+      published: true,
+      deleted: false
+    };
+
+    return new Promise(function(resolve, reject) {
+      Posts.findByIdAndUpdate(req.body._id,
+        { $push:{ comments: comment } },
+        { safe: true, upsert: true, new : true, runValidators: true }, function(err, data){
+          if (err) {
+            reject(err);
+          } else {
+            Posts.findById(req.body._id)
+            .populate([
+              { path: 'id_user', select: 'username' },
+              { path: 'comments.id_user', select: 'username' }
+            ])
+            .sort({ 'created_at' : -1 })
+            .exec(function (err, datas) {
+
+              datas.comments = _.reject(datas.comments, { 'id_user': null });
+              var posts = datas;
+
+              if (err) {
+                reject(err);
+              } else {
+                if(data){
+                  resolve(posts);
+                } else {
+                  resolve(null);
+                }
+              }
+            });
+          }
       });
     });
   }

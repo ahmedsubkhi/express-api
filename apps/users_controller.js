@@ -45,9 +45,9 @@ module.exports = {
     });
   },
 
-  delete: function(req, res) {
+  destroy: function(req, res) {
     var id = req.params.id;
-    users_repository.delete(id).then(function(stat) {
+    users_repository.destroy(id).then(function(stat) {
       res.json({
         deleted_id: id,
         status: stat
